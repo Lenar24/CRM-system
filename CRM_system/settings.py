@@ -56,10 +56,12 @@ INSTALLED_APPS = [
     "customers",  # активные клиенты
     "registration",  # регистрация/авторизация
     "analytics",  # статистика
+    # Дополнительные пакеты
+    "phonenumber_field",
+    "django_cleanup.apps.CleanupConfig",
 ]
 
 MIDDLEWARE = [
-    # "django.middleware.cache.UpdateCacheMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -67,7 +69,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    # "django.middleware.cache.FetchFromCacheMiddleware",
 ]
 
 ROOT_URLCONF = "CRM_system.urls"
@@ -89,7 +90,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "CRM_system.wsgi.application"
 
-
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 # База данных PostgreSQL
@@ -104,7 +104,6 @@ DATABASES = {
         "CONN_MAX_AGE": 600,  # ← Держать соединение 10 минут
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
@@ -124,7 +123,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 # Интернационализация
@@ -135,7 +133,6 @@ TIME_ZONE = "Europe/Moscow"  # Московское время
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
@@ -170,22 +167,6 @@ LOGOUT_REDIRECT_URL = "/accounts/login/"  # Перенаправление на 
 # URL для страницы входа
 LOGIN_URL = "/accounts/login/"
 
-# Кеширование
-CACHES = {
-    "default": {
-        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
-        "LOCATION": "unique-crm-cache",
-        "TIMEOUT": 300,  # 5 минут
-        "OPTIONS": {
-            "MAX_ENTRIES": 1000,
-        },
-    }
-}
-
-# Кеширование страниц
-CACHE_MIDDLEWARE_SECONDS = 300  # 5 минут
-CACHE_MIDDLEWARE_KEY_PREFIX = "crm_"
-
 # Отключаем кеш для тестов
 if "test" in sys.argv:
     CACHES = {
@@ -193,3 +174,7 @@ if "test" in sys.argv:
             "BACKEND": "django.core.cache.backends.dummy.DummyCache",
         }
     }
+
+# Настройки для телефонных номеров
+PHONENUMBER_DEFAULT_REGION = "RU"  # Россия
+PHONENUMBER_DB_FORMAT = "E164"  # Хранить в международном формате

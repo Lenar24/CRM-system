@@ -13,7 +13,7 @@ class AdCampaignModelTest(TestCase):
     def setUp(self):
         self.product = Product.objects.create(name="Тестовая услуга", description="Описание", price=1000.00)
         self.campaign = AdCampaign.objects.create(
-            name="Тестовая кампания", product=self.product, channel="social", budget=5000.00, is_active=True
+            name="Тестовая кампания", product=self.product, channel="social_vk", budget=5000.00, is_active=True
         )
 
     def test_campaign_creation(self):
@@ -56,7 +56,7 @@ class AdCampaignViewsTest(TestCase):
 
         # Создаем тестовую кампанию
         self.campaign = AdCampaign.objects.create(
-            name="Тестовая кампания", product=self.product, channel="social", budget=5000.00, is_active=True
+            name="Тестовая кампания", product=self.product, channel="social_vk", budget=5000.00, is_active=True
         )
 
     def test_campaign_list_view(self):
@@ -82,7 +82,7 @@ class AdCampaignViewsTest(TestCase):
             {
                 "name": "Новая кампания",
                 "product": self.product.pk,
-                "channel": "context",
+                "channel": "context_yandex",
                 "budget": 10000.00,
                 "is_active": True,
             },
@@ -98,7 +98,7 @@ class AdCampaignViewsTest(TestCase):
             {
                 "name": "Обновленная кампания",
                 "product": self.product.pk,
-                "channel": "email",
+                "channel": "context_yandex",
                 "budget": 15000.00,
                 "is_active": False,
             },
@@ -106,7 +106,7 @@ class AdCampaignViewsTest(TestCase):
         self.assertEqual(response.status_code, 302)
         self.campaign.refresh_from_db()
         self.assertEqual(self.campaign.name, "Обновленная кампания")
-        self.assertEqual(self.campaign.channel, "email")
+        self.assertEqual(self.campaign.channel, "context_yandex")
         self.assertEqual(self.campaign.budget, 15000.00)
         self.assertFalse(self.campaign.is_active)
 
@@ -123,7 +123,7 @@ class AdCampaignPermissionsTest(TestCase):
     def setUp(self):
         self.product = Product.objects.create(name="Тестовая услуга", description="Описание", price=1000.00)
         self.campaign = AdCampaign.objects.create(
-            name="Тестовая кампания", product=self.product, channel="social", budget=5000.00
+            name="Тестовая кампания", product=self.product, channel="social_vk", budget=5000.00
         )
 
     def test_user_without_permissions(self):

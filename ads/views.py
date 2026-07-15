@@ -1,6 +1,5 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.core.cache import cache
 from django.db import models
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView
@@ -21,18 +20,11 @@ class AdCampaignListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     paginate_by = 20
 
     def get_queryset(self):
-        cache_key = "ads_list"
-        queryset = cache.get(cache_key)
-
-        if queryset is None:
-            # Используем select_related и prefetch_related для уменьшения запросов
-            queryset = AdCampaign.objects.select_related("product").prefetch_related("leads").all()
-            cache.set(cache_key, queryset, 300)
+        queryset = AdCampaign.objects.select_related("product").prefetch_related("leads").all()
 
         search = self.request.GET.get("search")
         if search:
             queryset = queryset.filter(name__icontains=search)
-            cache.delete(cache_key)
 
         return queryset
 
@@ -42,11 +34,10 @@ class AdCampaignDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailVi
 
     model = AdCampaign
     template_name = "ads/ads-detail.html"
-    context_object_name = "ads"
+    context_object_name = "campaign"
     permission_required = "ads.can_view_adcampaign"
 
     def get_queryset(self):
-        # Загружаем связанные данные за один запрос
         return AdCampaign.objects.select_related("product").prefetch_related("leads").all()
 
 
@@ -61,8 +52,6 @@ class AdCampaignCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateVi
 
     def form_valid(self, form):
         messages.success(self.request, f'Кампания "{form.instance.name}" успешно создана!')
-        cache.delete("ads_list")
-        cache.delete("campaign_statistics")
         return super().form_valid(form)
 
 
@@ -77,8 +66,6 @@ class AdCampaignUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateVi
 
     def form_valid(self, form):
         messages.success(self.request, f'Кампания "{form.instance.name}" успешно обновлена!')
-        cache.delete("ads_list")
-        cache.delete("campaign_statistics")
         return super().form_valid(form)
 
 
@@ -95,8 +82,6 @@ class AdCampaignDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteVi
         campaign_name = campaign.name
         response = super().delete(request, *args, **kwargs)
         messages.success(request, f'Кампания "{campaign_name}" успешно удалена!')
-        cache.delete("ads_list")
-        cache.delete("campaign_statistics")
         return response
 
 
@@ -109,41 +94,23 @@ class AdCampaignStatisticView(LoginRequiredMixin, PermissionRequiredMixin, ListV
     permission_required = "ads.can_view_adcampaign"
 
     def get_queryset(self):
-        # Кешируем статистику
-        cache_key = "campaign_statistics"
-        campaigns = cache.get(cache_key)
-
-        if campaigns is None:
-            campaigns = (
-                AdCampaign.objects.annotate(
-                    leads_count=models.Count("leads", distinct=True),
-                    customers_count=models.Count("leads__customer", distinct=True),
-                )
-                .select_related("product")
-                .all()
+        return (
+            AdCampaign.objects.annotate(
+                leads_count=models.Count("leads", distinct=True),
+                customers_count=models.Count("leads__customer", distinct=True),
             )
-            cache.set(cache_key, campaigns, 300)
-
-        return campaigns
+            .select_related("product")
+            .all()
+        )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        # Кешируем ROI
-        roi_cache_key = "campaign_roi"
-        roi_data = cache.get(roi_cache_key)
-
-        if roi_data is None:
-            roi_data = {}
-            for campaign in context["ads"]:
-                total_revenue = (
-                    Contract.objects.filter(lead__campaign=campaign).aggregate(total=models.Sum("amount"))["total"] or 0
-                )
-                total_spent = campaign.budget or 0
-                roi_data[campaign.id] = round(total_revenue / total_spent, 2) if total_spent > 0 else "-"
-            cache.set(roi_cache_key, roi_data, 300)
-
         for campaign in context["ads"]:
-            campaign.profit = roi_data.get(campaign.id, "-")
+            total_revenue = (
+                Contract.objects.filter(lead__campaign=campaign).aggregate(total=models.Sum("amount"))["total"] or 0
+            )
+            total_spent = campaign.budget or 0
+            campaign.profit = round(total_revenue / total_spent, 2) if total_spent > 0 else "-"
 
         return context

@@ -1,16 +1,21 @@
+from django.core.validators import EmailValidator
 from django.db import models
 from django.urls import reverse
+from phonenumber_field.modelfields import PhoneNumberField
 
 from ads.models import AdCampaign
+from CRM_system.validators import validate_full_name
 
 
 class Lead(models.Model):
     """Модель потенциального клиента"""
 
-    first_name = models.CharField(max_length=100, verbose_name="Имя", db_index=True)
-    last_name = models.CharField(max_length=100, verbose_name="Фамилия", db_index=True)
-    phone = models.CharField(max_length=20, verbose_name="Телефон", db_index=True)
-    email = models.EmailField(verbose_name="Email", db_index=True)
+    first_name = models.CharField(max_length=100, verbose_name="Имя", db_index=True, validators=[validate_full_name])
+    last_name = models.CharField(max_length=100, verbose_name="Фамилия", db_index=True, validators=[validate_full_name])
+    phone = PhoneNumberField(verbose_name="Телефон", db_index=True, region="RU")
+    email = models.EmailField(
+        verbose_name="Email", db_index=True, validators=[EmailValidator(message="Введите корректный email адрес")]
+    )
     campaign = models.ForeignKey(
         AdCampaign,
         on_delete=models.SET_NULL,
@@ -20,7 +25,7 @@ class Lead(models.Model):
         related_name="leads",
         db_index=True,
     )
-    is_converted = models.BooleanField(default=False, verbose_name="Переведен в активного", db_index=True)
+    is_converted = models.BooleanField(default=False, verbose_name="Переведен в активного клиента", db_index=True)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания", db_index=True)
     updated_at = models.DateTimeField(auto_now=True, verbose_name="Дата обновления")
 

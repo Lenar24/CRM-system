@@ -8,10 +8,37 @@ class AdCampaign(models.Model):
     """Модель рекламной кампании"""
 
     CHANNEL_CHOICES = [
-        ("social", "Социальные сети"),
-        ("context", "Контекстная реклама"),
-        ("email", "Email-рассылка"),
-        ("seo", "SEO"),
+        # 📱 Социальные сети
+        ("social_vk", "ВКонтакте (VK)"),
+        ("social_tg", "Telegram"),
+        ("social_ok", "Одноклассники"),
+        ("social_fb", "Facebook"),
+        ("social_inst", "Instagram"),
+        ("social_youtube", "YouTube"),
+        ("social_tiktok", "TikTok"),
+        ("social_dzen", "Дзен"),
+        # 🔍 Поисковые системы
+        ("seo_yandex", "Яндекс SEO"),
+        ("seo_google", "Google SEO"),
+        ("context_yandex", "Яндекс.Директ"),
+        ("context_google", "Google Ads"),
+        # 📧 Email-маркетинг
+        ("email_newsletter", "Email-рассылка"),
+        ("email_autoresponder", "Авто-рассылка"),
+        # 📢 Медийная реклама
+        ("media_banner", "Баннерная реклама"),
+        ("media_video", "Видеореклама"),
+        ("media_native", "Нативная реклама"),
+        # 🤝 Партнёрские программы
+        ("partner_affiliate", "Партнёрская программа"),
+        ("partner_influencer", "Инфлюенс-маркетинг"),
+        # 📡 Офлайн-каналы
+        ("offline_radio", "Радио"),
+        ("offline_tv", "Телевидение"),
+        ("offline_print", "Печатная реклама"),
+        ("offline_outdoor", "Наружная реклама"),
+        ("offline_event", "Мероприятия"),
+        # 🎯 Другие
         ("other", "Другое"),
     ]
 

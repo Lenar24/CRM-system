@@ -12,12 +12,12 @@ class LeadModelTest(TestCase):
     def setUp(self):
         self.product = Product.objects.create(name="Тестовая услуга", description="Описание", price=1000.00)
         self.campaign = AdCampaign.objects.create(
-            name="Тестовая кампания", product=self.product, channel="social", budget=5000.00
+            name="Тестовая кампания", product=self.product, channel="social_vk", budget=5000.00
         )
         self.lead = Lead.objects.create(
             first_name="Иван",
             last_name="Петров",
-            phone="+7 999 123-45-67",
+            phone="+79991234567",
             email="ivan@example.com",
             campaign=self.campaign,
         )
@@ -26,6 +26,7 @@ class LeadModelTest(TestCase):
         self.assertEqual(self.lead.first_name, "Иван")
         self.assertEqual(self.lead.last_name, "Петров")
         self.assertEqual(str(self.lead), "Петров Иван")
+        self.assertEqual(str(self.lead.phone), "+79991234567")
 
     def test_get_full_name(self):
         self.assertEqual(self.lead.get_full_name(), "Петров Иван")
@@ -42,12 +43,12 @@ class LeadViewsTest(TestCase):
 
         self.product = Product.objects.create(name="Тестовая услуга", description="Описание", price=1000.00)
         self.campaign = AdCampaign.objects.create(
-            name="Тестовая кампания", product=self.product, channel="social", budget=5000.00
+            name="Тестовая кампания", product=self.product, channel="social_vk", budget=5000.00
         )
         self.lead = Lead.objects.create(
             first_name="Иван",
             last_name="Петров",
-            phone="+7 999 123-45-67",
+            phone="+79991234567",
             email="ivan@example.com",
             campaign=self.campaign,
         )
@@ -69,7 +70,7 @@ class LeadViewsTest(TestCase):
             {
                 "first_name": "Петр",
                 "last_name": "Сидоров",
-                "phone": "+7 888 123-45-67",
+                "phone": "+79998887766",
                 "email": "petr@example.com",
                 "campaign": self.campaign.pk,
             },

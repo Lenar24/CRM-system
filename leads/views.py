@@ -2,7 +2,6 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.db import models
 from django.shortcuts import redirect
-from django.core.cache import cache
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView
 
@@ -11,6 +10,8 @@ from .models import Lead
 
 
 class LeadListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+    """Список потенциальных клиентов (только не переведённые)"""
+
     model = Lead
     template_name = "leads/leads-list.html"
     context_object_name = "leads"
@@ -18,28 +19,24 @@ class LeadListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     paginate_by = 20
 
     def get_queryset(self):
-        # Используем кеш для списка лидов
-        cache_key = 'leads_list'
-        queryset = cache.get(cache_key)
+        # Показываем только НЕ переведённых лидов
+        queryset = Lead.objects.filter(is_converted=False).select_related("campaign").all()
 
-        if queryset is None:
-            queryset = Lead.objects.select_related('campaign').all()
-            cache.set(cache_key, queryset, 300)  # 5 минут
-
-        search = self.request.GET.get('search')
+        search = self.request.GET.get("search")
         if search:
             queryset = queryset.filter(
-                models.Q(first_name__icontains=search) |
-                models.Q(last_name__icontains=search) |
-                models.Q(phone__icontains=search) |
-                models.Q(email__icontains=search)
+                models.Q(first_name__icontains=search)
+                | models.Q(last_name__icontains=search)
+                | models.Q(phone__icontains=search)
+                | models.Q(email__icontains=search)
             )
-            cache.delete(cache_key)
 
         return queryset
 
 
 class LeadDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
+    """Детальная страница лида"""
+
     model = Lead
     template_name = "leads/leads-detail.html"
     context_object_name = "lead"
@@ -47,6 +44,8 @@ class LeadDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
 
 
 class LeadCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+    """Создание лида"""
+
     model = Lead
     form_class = LeadForm
     template_name = "leads/leads-create.html"
@@ -55,12 +54,12 @@ class LeadCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
 
     def form_valid(self, form):
         messages.success(self.request, f'Клиент "{form.instance.get_full_name()}" успешно создан!')
-        cache.delete('leads_list')
-        cache.delete('main_statistics')
         return super().form_valid(form)
 
 
 class LeadUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+    """Редактирование лида"""
+
     model = Lead
     form_class = LeadForm
     template_name = "leads/leads-edit.html"
@@ -69,11 +68,12 @@ class LeadUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
 
     def form_valid(self, form):
         messages.success(self.request, f'Клиент "{form.instance.get_full_name()}" успешно обновлен!')
-        cache.delete('leads_list')
         return super().form_valid(form)
 
 
 class LeadDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
+    """Удаление лида"""
+
     model = Lead
     template_name = "leads/leads-delete.html"
     permission_required = "leads.can_delete_lead"
@@ -84,9 +84,6 @@ class LeadDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
         lead_name = lead.get_full_name()
         response = super().delete(request, *args, **kwargs)
         messages.success(request, f'Клиент "{lead_name}" успешно удален!')
-        cache.delete('leads_list')
-        cache.delete('main_statistics')
-        cache.delete('campaign_statistics')
         return response
 
 
@@ -100,12 +97,17 @@ class LeadConvertView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
 
     def post(self, request, *args, **kwargs):
         lead = self.get_object()
+
+        # Проверяем, что лид ещё не переведён
+        if lead.is_converted:
+            messages.warning(request, f'Клиент "{lead.get_full_name()}" уже переведен в активные!')
+            return redirect("leads:list")
+
         # Отмечаем лида как переведённого
         lead.is_converted = True
         lead.save()
-        cache.delete('leads_list')
-        cache.delete('main_statistics')
-        cache.delete('campaign_statistics')
+
         messages.success(request, f'Клиент "{lead.get_full_name()}" переведен в активные!')
+
         # Перенаправляем на страницу создания активного клиента с предзаполненным lead_id
-        return redirect(f"customers:create?lead_id={lead.pk}")
+        return redirect(f"/customers/new/?lead_id={lead.pk}")
