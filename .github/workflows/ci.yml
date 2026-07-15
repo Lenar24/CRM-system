@@ -51,20 +51,10 @@ jobs:
       - name: Run Mypy
         run: mypy --config-file=mypy.ini ads/ analytics/ contracts/ customers/ leads/ products/ registration/ users/ CRM_system/
 
-      - name: Run Tests
+      - name: Run Tests with Coverage
         env:
-          DB_NAME: crm_system_db
-          DB_USER: postgresql
-          DB_PASSWORD: postgresql
-          DB_HOST: localhost
-          DB_PORT: 5432
-          SECRET_KEY: django-insecure-test-key
-          DEBUG: False
+          GITHUB_ACTIONS: true  # ← Это активирует загрузку .env.test
         run: |
           python manage.py migrate
-          python manage.py test -v 2
-
-      - name: Coverage Report
-        run: |
-          coverage run manage.py test
+          coverage run manage.py test --keepdb
           coverage report -m
