@@ -1,0 +1,129 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.black]
+line-length = 120
+target-version = ['py313']
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+  | migrations
+  | staticfiles
+  | media
+  | __pycache__
+  | .pytest_cache
+)/
+'''
+
+[tool.isort]
+profile = "black"
+line_length = 120
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+ensure_newline_before_comments = true
+skip_glob = ["*/migrations/*", "*/staticfiles/*", "*/media/*", "*/__pycache__/*"]
+known_first_party = ["CRM_system", "ads", "analytics", "contracts", "customers", "leads", "products", "registration", "users"]
+
+[tool.pylint]
+max-line-length = 120
+output-format = "colorized"
+score = true
+reports = false
+ignore-patterns = [
+    ".*/migrations/.*",
+    ".*/settings.py",
+    ".*/manage.py",
+    ".*/apps.py",
+    ".*/__init__.py",
+]
+
+[tool.pylint.messages_control]
+disable = [
+    "missing-docstring",
+    "invalid-name",
+    "too-many-arguments",
+    "too-few-public-methods",
+    "no-member",
+    "too-many-instance-attributes",
+    "too-many-ancestors",
+    "protected-access",
+    "missing-class-docstring",
+    "missing-module-docstring",
+    "missing-function-docstring",
+    "fixme",
+    "wrong-import-order",
+    "relative-beyond-top-level",
+    "unused-argument",
+    "global-statement",
+    "redefined-builtin",
+    "import-outside-toplevel",
+    "duplicate-code",
+]
+
+[tool.pylint.basic]
+good-names = ["i", "j", "k", "ex", "Run", "_", "id", "pk", "db", "wsgi", "app", "urlpatterns", "handler"]
+
+[tool.pylint.design]
+max-args = 7
+max-attributes = 15
+
+[tool.pylint.typecheck]
+generated-members = [
+    "REQUEST", "GET", "POST", "session", "user",
+    "messages", "errors", "settings", "logger",
+    "reverse", "resolve", "Client",
+    "assertTemplateUsed", "assertContains", "assertRedirects",
+    "assertFormError", "assertQuerysetEqual",
+    "SimpleTestCase", "TestCase", "TransactionTestCase",
+]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "CRM_system.settings"
+python_files = ["test_*.py", "*_tests.py"]
+addopts = "-v --tb=short"
+testpaths = ["ads", "analytics", "contracts", "customers", "leads", "products", "registration", "users"]
+
+[tool.mypy]
+python_version = "3.13"
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true
+exclude = ["migrations", "staticfiles", "media", ".venv", "__pycache__"]
+plugins = ["mypy_django_plugin.main"]
+
+[tool.coverage.run]
+source = ["."]
+omit = [
+    "*/migrations/*",
+    "*/__pycache__/*",
+    "manage.py",
+    "*/tests.py",
+    "*/settings.py",
+    "*/wsgi.py",
+    "*/asgi.py",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if __name__ == .__main__.:",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if False:",
+]

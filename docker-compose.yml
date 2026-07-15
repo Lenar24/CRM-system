@@ -1,0 +1,67 @@
+services:
+  db:
+    image: postgres:17
+    container_name: crm_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - crm_network
+
+  web:
+    build: .
+    user: "${UID:-1000}:${GID:-1000}"
+    container_name: crm_web
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+      - /app/__pycache__  # Избегаем конфликтов кэша
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=db
+      - DB_PORT=${DB_PORT}
+      - SECRET_KEY=${SECRET_KEY}
+      - DEBUG=${DEBUG}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS}
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - crm_network
+
+  # Опционально: сервис для анализа кода
+  lint:
+    build: .
+    container_name: crm_lint
+    command: pylint CRM_system/ --score=y
+    volumes:
+      - .:/app
+    environment:
+      - DJANGO_SETTINGS_MODULE=CRM_system.settings
+    depends_on:
+      - db
+    networks:
+      - crm_network
+    profiles:
+      - lint  # Запускается только с профилем lint
+
+networks:
+  crm_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
