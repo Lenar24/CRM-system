@@ -10,13 +10,17 @@ from CRM_system.validators import validate_full_name
 class Lead(models.Model):
     """Модель потенциального клиента"""
 
-    first_name = models.CharField(max_length=100, verbose_name="Имя", db_index=True, validators=[validate_full_name])
-    last_name = models.CharField(max_length=100, verbose_name="Фамилия", db_index=True, validators=[validate_full_name])
-    phone = PhoneNumberField(verbose_name="Телефон", db_index=True, region="RU")
-    email = models.EmailField(
+    first_name: models.CharField = models.CharField(
+        max_length=100, verbose_name="Имя", db_index=True, validators=[validate_full_name]
+    )
+    last_name: models.CharField = models.CharField(
+        max_length=100, verbose_name="Фамилия", db_index=True, validators=[validate_full_name]
+    )
+    phone: PhoneNumberField = PhoneNumberField(verbose_name="Телефон", db_index=True, region="RU")
+    email: models.EmailField = models.EmailField(
         verbose_name="Email", db_index=True, validators=[EmailValidator(message="Введите корректный email адрес")]
     )
-    campaign = models.ForeignKey(
+    campaign: models.ForeignKey = models.ForeignKey(
         AdCampaign,
         on_delete=models.SET_NULL,
         null=True,
@@ -25,9 +29,13 @@ class Lead(models.Model):
         related_name="leads",
         db_index=True,
     )
-    is_converted = models.BooleanField(default=False, verbose_name="Переведен в активного клиента", db_index=True)
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания", db_index=True)
-    updated_at = models.DateTimeField(auto_now=True, verbose_name="Дата обновления")
+    is_converted: models.BooleanField = models.BooleanField(
+        default=False, verbose_name="Переведен в активного клиента", db_index=True
+    )
+    created_at: models.DateTimeField = models.DateTimeField(
+        auto_now_add=True, verbose_name="Дата создания", db_index=True
+    )
+    updated_at: models.DateTimeField = models.DateTimeField(auto_now=True, verbose_name="Дата обновления")
 
     class Meta:
         verbose_name = "Потенциальный клиент"

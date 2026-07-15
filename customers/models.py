@@ -8,7 +8,7 @@ from leads.models import Lead
 class Customer(models.Model):
     """Модель активного клиента"""
 
-    lead = models.OneToOneField(
+    lead: models.OneToOneField = models.OneToOneField(
         Lead,
         on_delete=models.CASCADE,
         verbose_name="Потенциальный клиент",
@@ -16,7 +16,7 @@ class Customer(models.Model):
         help_text="Выберите потенциального клиента для перевода в активные",
         db_index=True,
     )
-    contract = models.OneToOneField(
+    contract: models.OneToOneField = models.OneToOneField(
         Contract,
         on_delete=models.CASCADE,
         verbose_name="Контракт",
@@ -24,9 +24,11 @@ class Customer(models.Model):
         help_text="Выберите контракт для клиента",
         db_index=True,
     )
-    is_active = models.BooleanField(default=True, verbose_name="Активен", db_index=True)
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания", db_index=True)
-    updated_at = models.DateTimeField(auto_now=True, verbose_name="Дата обновления")
+    is_active: models.BooleanField = models.BooleanField(default=True, verbose_name="Активен", db_index=True)
+    created_at: models.DateTimeField = models.DateTimeField(
+        auto_now_add=True, verbose_name="Дата создания", db_index=True
+    )
+    updated_at: models.DateTimeField = models.DateTimeField(auto_now=True, verbose_name="Дата обновления")
 
     class Meta:
         verbose_name = "Активный клиент"

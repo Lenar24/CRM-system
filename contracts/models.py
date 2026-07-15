@@ -8,21 +8,27 @@ from products.models import Product
 class Contract(models.Model):
     """Модель контракта"""
 
-    name = models.CharField(max_length=200, verbose_name="Название контракта", unique=True, db_index=True)
-    product = models.ForeignKey(
+    name: models.CharField = models.CharField(
+        max_length=200, verbose_name="Название контракта", unique=True, db_index=True
+    )
+    product: models.ForeignKey = models.ForeignKey(
         Product, on_delete=models.CASCADE, verbose_name="Услуга", related_name="contracts", db_index=True
     )
-    lead = models.ForeignKey(
+    lead: models.ForeignKey = models.ForeignKey(
         Lead, on_delete=models.CASCADE, verbose_name="Клиент", related_name="contracts", db_index=True
     )
-    document = models.FileField(upload_to="contracts/", verbose_name="Файл с документом", blank=True, null=True)
-    signing_date = models.DateField(verbose_name="Дата заключения", db_index=True)
-    validity_period = models.CharField(
+    document: models.FileField = models.FileField(
+        upload_to="contracts/", verbose_name="Файл с документом", blank=True, null=True
+    )
+    signing_date: models.DateField = models.DateField(verbose_name="Дата заключения", db_index=True)
+    validity_period: models.CharField = models.CharField(
         max_length=100, verbose_name="Период действия", help_text="Например: 12 месяцев, 1 год"
     )
-    amount = models.DecimalField(max_digits=12, decimal_places=2, verbose_name="Сумма контракта", db_index=True)
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
-    updated_at = models.DateTimeField(auto_now=True, verbose_name="Дата обновления")
+    amount: models.DecimalField = models.DecimalField(
+        max_digits=12, decimal_places=2, verbose_name="Сумма контракта", db_index=True
+    )
+    created_at: models.DateTimeField = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
+    updated_at: models.DateTimeField = models.DateTimeField(auto_now=True, verbose_name="Дата обновления")
 
     class Meta:
         verbose_name = "Контракт"

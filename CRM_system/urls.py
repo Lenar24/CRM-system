@@ -15,12 +15,15 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
+from typing import List, Union
+
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
+from django.urls.resolvers import URLPattern, URLResolver
 
-urlpatterns = [
+urlpatterns: List[Union[URLPattern, URLResolver]] = [
     path("admin/", admin.site.urls),
     path("", include("users.urls")),  # Главная страница (users/index.html)
     path("products/", include("products.urls")),  # Услуги
@@ -34,5 +37,5 @@ urlpatterns = [
 
 # Для разработки: раздаём статические и медиа-файлы
 if settings.DEBUG:
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns.extend(static(settings.STATIC_URL, document_root=settings.STATIC_ROOT))
+    urlpatterns.extend(static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT))

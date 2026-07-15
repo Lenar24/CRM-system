@@ -42,29 +42,31 @@ class AdCampaign(models.Model):
         ("other", "Другое"),
     ]
 
-    name = models.CharField(
+    name: models.CharField = models.CharField(
         max_length=200,
         verbose_name="Название кампании",
         unique=True,
         help_text="Введите название рекламной кампании",
         db_index=True,
     )
-    product = models.ForeignKey(
+    product: models.ForeignKey = models.ForeignKey(
         Product, on_delete=models.CASCADE, verbose_name="Рекламируемая услуга", related_name="campaigns", db_index=True
     )
-    channel = models.CharField(
+    channel: models.CharField = models.CharField(
         max_length=20, choices=CHANNEL_CHOICES, verbose_name="Канал продвижения", default="social"
     )
-    budget = models.DecimalField(
+    budget: models.DecimalField = models.DecimalField(
         max_digits=10,
         decimal_places=2,
         verbose_name="Бюджет на рекламу",
         help_text="Укажите бюджет в рублях",
         db_index=True,
     )
-    is_active = models.BooleanField(default=True, verbose_name="Активна", db_index=True)
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания", db_index=True)
-    updated_at = models.DateTimeField(auto_now=True, verbose_name="Дата обновления")
+    is_active: models.BooleanField = models.BooleanField(default=True, verbose_name="Активна", db_index=True)
+    created_at: models.DateTimeField = models.DateTimeField(
+        auto_now_add=True, verbose_name="Дата создания", db_index=True
+    )
+    updated_at: models.DateTimeField = models.DateTimeField(auto_now=True, verbose_name="Дата обновления")
 
     class Meta:
         verbose_name = "Рекламная кампания"

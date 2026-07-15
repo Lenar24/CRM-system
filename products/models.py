@@ -5,11 +5,15 @@ from django.urls import reverse
 class Product(models.Model):
     """Модель услуги/продукта"""
 
-    name = models.CharField(max_length=200, verbose_name="Название", unique=True, db_index=True)
-    description = models.TextField(verbose_name="Описание", blank=True)
-    price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Стоимость", db_index=True)
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания", db_index=True)
-    updated_at = models.DateTimeField(auto_now=True, verbose_name="Дата обновления")
+    name: models.CharField = models.CharField(max_length=200, verbose_name="Название", unique=True, db_index=True)
+    description: models.TextField = models.TextField(verbose_name="Описание", blank=True)
+    price: models.DecimalField = models.DecimalField(
+        max_digits=10, decimal_places=2, verbose_name="Стоимость", db_index=True
+    )
+    created_at: models.DateTimeField = models.DateTimeField(
+        auto_now_add=True, verbose_name="Дата создания", db_index=True
+    )
+    updated_at: models.DateTimeField = models.DateTimeField(auto_now=True, verbose_name="Дата обновления")
 
     class Meta:
         verbose_name = "Услуга"

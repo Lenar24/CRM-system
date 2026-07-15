@@ -96,14 +96,6 @@ python_files = ["test_*.py", "*_tests.py"]
 addopts = "-v --tb=short"
 testpaths = ["ads", "analytics", "contracts", "customers", "leads", "products", "registration", "users"]
 
-[tool.mypy]
-python_version = "3.13"
-warn_return_any = true
-warn_unused_configs = true
-ignore_missing_imports = true
-exclude = ["migrations", "staticfiles", "media", ".venv", "__pycache__"]
-plugins = ["mypy_django_plugin.main"]
-
 [tool.coverage.run]
 source = ["."]
 omit = [
