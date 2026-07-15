@@ -20,8 +20,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Для CI/CD используем .env.test
-if os.environ.get('GITHUB_ACTIONS'):
-    load_dotenv('.env.test')
+if os.environ.get("GITHUB_ACTIONS"):
+    load_dotenv(".env.test")
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
