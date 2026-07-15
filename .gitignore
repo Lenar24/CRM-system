@@ -58,8 +58,8 @@ cover/
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
-media/              # ← ВАЖНО!
-staticfiles/        # ← ВАЖНО!
+media/
+staticfiles/
 
 # Flask stuff:
 instance/
@@ -166,14 +166,20 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 
-# PyCharm
-# .idea/
+# JetBrains IDE (PyCharm, IntelliJ, etc.)
+.idea/
+*.iml
+*.ipr
+*.iws
+.idea_modules/
+out/
 
 # Abstra
 .abstra/
 
 # Visual Studio Code
-# .vscode/
+.vscode/
+*.code-workspace
 
 # Temporary file for partial code execution
 tempCodeRunnerFile.py
@@ -192,11 +198,11 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
-# PostgreSQL local data (если есть)
+# PostgreSQL local data
 postgresql-data/
 pgdata/
 
-# Django admin static (если собираете локально)
+# Django admin static
 admin_static/
 
 # Debug files
