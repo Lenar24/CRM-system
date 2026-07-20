@@ -1,0 +1,100 @@
+[MASTER]
+# Файлы и папки для игнорирования
+ignore=venv,.venv,env,migrations,.git,__pycache__,staticfiles,media,node_modules
+ignore-patterns=
+    .*/migrations/.*,
+    .*/settings.py,
+    .*/manage.py,
+    .*/apps.py,
+    .*/__init__.py,
+    test_.*?py
+
+# Использовать анализатор AST, а не импорт
+analyse-fallback-blocks=True
+
+# Включить дополнительную проверку
+load-plugins=pylint_django
+
+# Django настройки
+django-settings-module=CRM_system.settings
+
+[FORMAT]
+# Максимальная длина строки
+max-line-length=120
+# Игнорировать длинные строки в комментариях и документации
+ignore-long-lines=^\s*(#|'''|"""|https?://)
+
+[MESSAGES CONTROL]
+# Отключить некоторые предупреждения для Django
+disable=
+    too-many-arguments,
+    too-few-public-methods,
+    too-many-instance-attributes,
+    too-many-ancestors,
+    no-member,
+    protected-access,
+    missing-class-docstring,
+    missing-module-docstring,
+    missing-function-docstring,
+    invalid-name,
+    fixme,
+    wrong-import-order,
+    relative-beyond-top-level,
+    unused-argument,
+    global-statement,
+    redefined-builtin,
+    import-outside-toplevel,
+    duplicate-code,
+    imported-auth-user,
+    trailing-newlines,
+    unused-variable
+
+[BASIC]
+# Хорошие имена для переменных
+good-names=i,j,k,ex,Run,_,id,pk,db,wsgi,app,urlpatterns,handler
+# Переменные, начинающиеся с _ считаются приватными
+dummy-variables-rgx=_$|dummy|_|__
+
+[SIMILARITIES]
+# Игнорировать дублирование кода в миграциях
+ignore-imports=yes
+min-similarity-lines=8
+
+[DESIGN]
+# Максимальное количество аргументов в функции
+max-args=7
+# Максимальное количество атрибутов в классе
+max-attributes=15
+
+[TYPECHECK]
+# Игнорировать проверку типов для Django и сторонних библиотек
+generated-members=
+    REQUEST,
+    GET,
+    POST,
+    session,
+    user,
+    messages,
+    errors,
+    assertTemplateUsed,
+    assertContains,
+    assertRedirects,
+    assertFormError,
+    assertQuerysetEqual,
+    settings,
+    logger,
+    transaction,
+    reverse,
+    resolve,
+    SimpleTestCase,
+    TestCase,
+    TransactionTestCase,
+    Client
+
+[REPORTS]
+# Установить формат вывода (цветной)
+output-format=colorized
+# Сохранять отчет в файл
+reports=no
+# Журнал рефакторинга
+score=yes
